@@ -24,6 +24,44 @@
         ],
         "summary": "Get All Players",
         "description": "Return List All Players",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "username of the player",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "email of the player",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "experience",
+            "in": "query",
+            "description": "experience of the player",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "lvl",
+            "in": "query",
+            "description": "lvl of the player",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
