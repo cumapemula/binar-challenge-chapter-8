@@ -1,22 +1,38 @@
-import Input from "./Input";
-import Label from "./Label";
-
 function InputForm(props) {
-  const { htmlFor, type, placeholder, name, children, id, min, value, onChange } = props;
+  const { children } = props;
+  return <div className="form-control w-full max-w-xs">{children}</div>;
+}
+
+function Input(props) {
+  const {
+    type,
+    placeholder,
+    name,
+    id,
+    min,
+    value,
+    onChange,
+    readOnly,
+    minLength,
+  } = props;
   return (
-    <div className="form-control w-full max-w-xs">
-      <Label htmlFor={htmlFor}>{children}</Label>
-      <Input
-        type={type}
-        placeholder={placeholder}
-        name={name}
-        id={id}
-        min={min}
-        value={value}
-        onChange={onChange}
-      ></Input>
-    </div>
+    <input
+      autoComplete="off"
+      type={type}
+      placeholder={placeholder}
+      name={name}
+      value={value}
+      onChange={onChange}
+      id={id}
+      min={min}
+      required
+      readOnly={readOnly}
+      minLength={minLength}
+      className="input border-slate-600 focus:outline-none input-sm w-80 max-w-lg"
+    />
   );
 }
+
+InputForm.Input = Input;
 
 export default InputForm;

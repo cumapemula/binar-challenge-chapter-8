@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import FormCreate from "../Fragments/FormCreate";
-import ListPlayer from "../Fragments/ListPlayer";
 import PlayerLayouts from "../Layouts/PlayerLayouts";
+import List from "../Fragments/List";
+import Form from "../Fragments/Form";
+import { AlertError } from "../Elements/Alert";
+
+let errorMessage = false;
 
 function CreatePage() {
   const [username, setUsername] = useState("");
@@ -12,6 +15,7 @@ function CreatePage() {
 
   useEffect(() => {
     setPlayers(JSON.parse(localStorage.getItem("data")) || []);
+    errorMessage = false;
   }, []);
 
   const resetState = () => {
@@ -19,11 +23,22 @@ function CreatePage() {
     setPassword("");
     setEmail("");
     setExp(0);
-    return
-  }
+    return;
+  };
+
+  const isExist = players.find((player) => {
+    return player.username === username || player.email === email;
+  });
 
   const createPlayer = (event) => {
     event.preventDefault();
+    errorMessage = false;
+
+    if (isExist) {
+      resetState();
+      errorMessage = true;
+      return;
+    }
 
     if (players.length > 0) {
       localStorage.setItem(
@@ -34,22 +49,24 @@ function CreatePage() {
             id: players.length + 1,
             username,
             email,
-            password : "*****",
+            password: "*****",
             exp,
             level: exp || 0,
           },
         ])
       );
-      resetState()
       setPlayers(JSON.parse(localStorage.getItem("data")));
-      return;
+      resetState();
+      return false;
     }
     localStorage.setItem(
       "data",
-      JSON.stringify([{ id: 1, username, email, password: "*****", exp, level: exp || 0, }])
+      JSON.stringify([
+        { id: 1, username, email, password: "*****", exp, level: exp || 0 },
+      ])
     );
-    resetState()
     setPlayers(JSON.parse(localStorage.getItem("data")));
+    resetState();
     return;
   };
 
@@ -57,38 +74,93 @@ function CreatePage() {
     <>
       <PlayerLayouts></PlayerLayouts>
       <div className="flex flex-col flex-wrap gap-10 relative translate-y-20 pb-40">
-        <h1 className="text-3xl font-semibold text-slate-900 tracking-wide">Create Player</h1>
-        <FormCreate
-          onSubmit={createPlayer}
-          valueUsername={username}
-          onChangeUsername={(event) => {
-            setUsername(() => event.target.value);
-          }}
-          valueEmail={email}
-          onChangeEmail={(event) => {
-            setEmail(() => event.target.value);
-          }}
-          valuePassword={password}
-          onChangePassword={(event) => {
-            setPassword(() => event.target.value);
-          }}
-          valueExp={exp}
-          onChangeExp={(event) => {
-            setExp(() => event.target.value);
-          }}
-        ></FormCreate>
-        <ListPlayer>
-          {players.map((player) => {
-            return (
-              <tr key={player.id}>
-                <td>{player.username}</td>
-                <td>{player.email}</td>
-                <td>*****</td>
-                <td>{player.exp}</td>
-              </tr>
-            );
-          })}
-        </ListPlayer>
+        <h1 className="text-3xl font-semibold text-slate-900 tracking-wide">
+          Create Player
+        </h1>
+        {errorMessage == true ? (
+          <div className="w-1/4 mx-auto capitalize">
+            <AlertError>username / email already exists</AlertError>
+          </div>
+        ) : (
+          <></>
+        )}
+        <Form onSubmit={createPlayer}>
+          <Form.Label htmlFor="username">username</Form.Label>
+          <Form.Input
+            type="text"
+            placeholder="username"
+            name="username"
+            id="username"
+            value={username}
+            onChange={(event) => {
+              setUsername(() => event.target.value);
+            }}
+          />
+          <Form.Label htmlFor="email">email</Form.Label>
+          <Form.Input
+            type="email"
+            placeholder="email"
+            name="email"
+            id="email"
+            value={email}
+            onChange={(event) => {
+              setEmail(() => event.target.value);
+            }}
+          />
+          <Form.Label htmlFor="password">password</Form.Label>
+          <Form.Input
+            type="password"
+            placeholder="password"
+            name="password"
+            id="password"
+            value={password}
+            onChange={(event) => {
+              setPassword(() => event.target.value);
+            }}
+          />
+          <Form.Label htmlFor="exp">experience</Form.Label>
+          <Form.Input
+            type="number"
+            placeholder="exp"
+            name="exp"
+            id="exp"
+            min="0"
+            value={exp}
+            onChange={(event) => {
+              setExp(() => event.target.value);
+            }}
+          />
+          <div>
+            <Form.Button>Create</Form.Button>
+          </div>
+        </Form>
+        <List>
+          <List.Header>
+            {players.length > 0 ? (
+              <>
+                <td>username</td>
+                <td>email</td>
+                <td>password</td>
+                <td>experience</td>
+              </>
+            ) : (
+              <></>
+            )}
+          </List.Header>
+          <List.Body>
+            {players.length > 0 &&
+              players.map((player) => {
+                return (
+                  <tr key={player.id}>
+                    <td>{player.username}</td>
+                    <td>{player.email}</td>
+                    <td>*****</td>
+                    <td>{player.exp}</td>
+                  </tr>
+                );
+              })}
+          </List.Body>
+        </List>
       </div>
     </>
   );
